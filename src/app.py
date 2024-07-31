@@ -12,6 +12,7 @@ from models import db, Characters
 from models import db, Planets
 from models import db, User
 from models import db, Favorites
+
 #from models import Person
 
 app = Flask(__name__)
@@ -131,6 +132,30 @@ def get_planet(id):
     # print(especific_planet)
     query_result= especific_planet.serialize()
     return jsonify(query_result), 200
+
+#POS Planeta
+@app.route('/planet/', methods=['POST'])
+def add_new_planet():
+    request_body= request.get_json()
+    # print(request_body)
+    add_new_planet= Planets.query.filter_by(name_planet=request_body['name_planet']).first() #me permite filtrar si el planeta existe
+    if add_new_planet:
+        return jsonify({"msj":"El planeta ya existe"}), 404 #en el caso que exista me avisa y da el error 404
+    
+    new_planet = Planets(
+    name_planet = request_body['name_planet'],# informacion que quiero de mi usuario y que tengo contenida en mi request_body
+    populate= request_body['populate'],
+    mass= request_body ['mass'],
+    climate= request_body['climate'],
+    diameter= request_body ['diameter'],
+    gravity= request_body['gravity'],
+    orbital_period= request_body['orbital_period'],
+    surface_water= request_body ['surface_water']
+    )
+    # print(new_planet)
+    db.session.add(new_planet)
+    db.session.commit()
+    return jsonify({"msj":"El planeta fue creado"}), 201
 
 
 #ENDPOINT FAVORITOS
