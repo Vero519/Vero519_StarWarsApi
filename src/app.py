@@ -113,6 +113,30 @@ def get_character(id):
     # print(query_result)
     return jsonify(query_result), 200
 
+#POST personaje
+@app.route('/characters/', methods=['POST'])
+def add_new_character():
+    request_body= request.get_json()
+    # print(request_body)
+    character= Characters.query.filter_by(name=request_body['name']).first() #me permite filtrar si el personaje existe
+    if character:
+        return jsonify({"msj":"El personaje ya existe"}), 404 #en el caso que exista me avisa y da el error 404
+    
+    new_character = Characters(
+        name = request_body['name'],
+        mass= request_body ['mass'],
+        height= request_body['height'],
+        hair_color= request_body ['hair_color'],
+        eye_color= request_body['eye_color'],
+        skin_color= request_body['skin_color'],
+        birth_year= request_body ['birth_year'],
+        gender= request_body['gender']
+    )
+    db.session.add(new_character)
+    db.session.commit()
+    return jsonify({"msj":"El personje fue creado"}), 201
+
+
 #ENDPOINT PLANETAS
 #GET Planetas
 @app.route('/planets', methods=['GET'])
